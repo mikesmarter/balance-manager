@@ -41,7 +41,7 @@
   },
   "scripts": {
     "remove-sourcemaps": "rm -rf build/static/js/*.map",
-    "start": "HTTPS=true NODE_ENV=development react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "build:lambda": "netlify-lambda build src/lambda",
     "test": "react-scripts test --env=jsdom",

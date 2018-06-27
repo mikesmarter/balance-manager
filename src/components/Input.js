@@ -15,6 +15,13 @@ const shimmer = keyframes`
 
 `;
 
+const StyledMetacertShildVerified = styled.span`
+  position:relative;
+  width: 50px;
+  height: 52px;
+  background: red;
+`;
+
 const StyledInputWrapper = styled.div`
   width: 100%;
   opacity: ${({ fetching, disabled }) => (disabled && !fetching ? '0.5' : '1')};
@@ -27,6 +34,7 @@ const StyledLabel = styled.label`
   width: 100%;
   opacity: ${({ hide }) => (hide ? 0 : 1)};
 `;
+
 
 const StyledInput = styled.input`
   width: 100%;
@@ -81,6 +89,7 @@ const Input = ({
   value,
   placeholder,
   monospace,
+  xpto,
   ...props
 }) => {
   let _label = label;
@@ -105,6 +114,7 @@ const Input = ({
       _placeholder = lang.t('input.input_placeholder');
     }
   }
+
   return (
     <StyledInputWrapper disabled={fetching || disabled}>
       <StyledLabel hide={_label === 'Input'}>{_label}</StyledLabel>
@@ -115,6 +125,7 @@ const Input = ({
         value={!disabled ? value : ''}
         placeholder={_placeholder}
         monospace={monospace}
+        xpto={_placeholder}
         {...props}
       />
     </StyledInputWrapper>

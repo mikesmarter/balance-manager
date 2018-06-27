@@ -26,6 +26,8 @@ import {
   sendUpdateSelected,
   sendMaxBalance,
   sendToggleConfirmationView,
+  checkMetaCertWallet,
+  clearMetaCertResponse,
 } from '../reducers/_send';
 import { notificationShow } from '../reducers/_notification';
 import { isValidAddress } from '../helpers/validators';
@@ -37,6 +39,8 @@ import {
 } from '../helpers/bignumber';
 import { capitalize } from '../helpers/utilities';
 import { fonts, colors } from '../styles';
+
+import { toChecksumAddress } from 'ethereumjs-util';
 
 const StyledSuccessMessage = styled.div`
   width: 100%;
@@ -275,6 +279,39 @@ class SendModal extends Component {
     this.props.sendModalInit();
   }
   componentDidUpdate(prevProps) {
+
+    if (isValidAddress(this.props.recipient))
+    {
+
+      if (this.props.MetaCertWalletResult.wallet !== undefined) {
+
+        console.log("seekdbg: props:", this.props.MetaCertWalletResult);
+
+        const walletAddress = toChecksumAddress(this.props.recipient);
+
+        // MIKE only calls API if wallet is different from previous result
+        if (this.props.MetaCertWalletResult.wallet !== walletAddress)
+        {
+          this.props.checkMetaCertWallet();
+          console.log("seekdbg: next call checkMetaCertWallet()", walletAddress);
+        }
+      }
+      else
+      {
+        // NO previous API Call
+        this.props.checkMetaCertWallet();
+        console.log("seekdbg: first call checkMetaCertWallet()", this.props.recipient);
+      }
+    }
+    else
+    {
+      // MIKE: if not a valid address => this.props.MetaCertWalletResult = {};
+      if (this.props.MetaCertWalletResult.walletType !== undefined)
+      {
+        this.props.clearMetaCertResponse();
+      }
+    }
+
     if (this.props.recipient.length >= 42) {
       if (this.props.selected.symbol !== prevProps.selected.symbol) {
         this.props.sendUpdateGasPrice();
@@ -398,6 +435,26 @@ class SendModal extends Component {
     );
   };
 
+
+  _xpto = () => {
+
+    console.log("seekdbg: _xpto called");
+
+    let r = false;
+
+    if (Object.keys(this.props.MetaCertWalletResult).length === 0)
+    {
+      console.log("seekdbg: EMPTY");
+      r = true;
+    } 
+    else
+    {
+      console.log("seekdbg: NOT EMPTY");
+      r = false;
+    }
+    return r;
+  }
+
   render = () => {
     return (
       <Card background="lightGrey">
@@ -428,8 +485,9 @@ class SendModal extends Component {
                   monospace
                   label={lang.t('input.recipient_address')}
                   spellCheck="false"
-                  placeholder="0x..."
+                  placeholder="0x.xxxxxx.."
                   type="text"
+                  xpto="testing"
                   value={this.props.recipient}
                   onFocus={this.onAddressInputFocus}
                   onBlur={this.onAddressInputBlur}
@@ -447,6 +505,17 @@ class SendModal extends Component {
                   <img src={qrIcon} alt="recipient" />
                 </StyledQRIcon>
               </StyledFlex>
+
+              {this._xpto() ? (
+                ''
+              ) : 
+              (
+                this.props.MetaCertWalletResult.labelType === null ? 
+                (<p>NULL</p>) 
+                : 
+                (<p>{this.props.MetaCertWalletResult.labelType}</p>) 
+              )}
+              
 
               <StyledFlex>
                 <StyledFlex>
@@ -716,6 +785,9 @@ SendModal.propTypes = {
   network: PropTypes.string.isRequired,
   nativeCurrency: PropTypes.string.isRequired,
   prices: PropTypes.object.isRequired,
+  checkMetaCertWallet: PropTypes.func.isRequired,
+  clearMetaCertResponse: PropTypes.func.isRequired,
+  MetaCertWalletResult: PropTypes.object.isRequired,
 };
 
 const reduxProps = ({ modal, send, account }) => ({
@@ -737,6 +809,7 @@ const reduxProps = ({ modal, send, account }) => ({
   network: account.network,
   nativeCurrency: account.nativeCurrency,
   prices: account.prices,
+  MetaCertWalletResult: send.MetaCertWalletResult,  
 });
 
 export default connect(reduxProps, {
@@ -752,4 +825,6 @@ export default connect(reduxProps, {
   sendMaxBalance,
   sendToggleConfirmationView,
   notificationShow,
+  checkMetaCertWallet,
+  clearMetaCertResponse,
 })(SendModal);

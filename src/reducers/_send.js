@@ -26,6 +26,8 @@ import {
   accountUpdateHasPendingTransaction,
 } from './_account';
 
+import { toChecksumAddress } from 'ethereumjs-util';
+
 // -- Constants ------------------------------------------------------------- //
 
 const SEND_GET_GAS_PRICES_REQUEST = 'send/SEND_GET_GAS_PRICES_REQUEST';
@@ -51,6 +53,12 @@ const SEND_UPDATE_HAS_PENDING_TRANSACTION =
   'send/SEND_UPDATE_HAS_PENDING_TRANSACTION';
 
 const SEND_CLEAR_FIELDS = 'send/SEND_CLEAR_FIELDS';
+
+const METACERT_API_CLEAR = 'send/METACERT_API_CLEAR';
+const METACERT_API_RESPONSE = 'send/METACERT_API_RESPONSE';
+
+//const METACERT_API_URL = 'http://middleware.seeksmarterdev.com/check';
+const METACERT_API_URL = 'http://localhost:5000/check';
 
 // -- Actions --------------------------------------------------------------- //
 
@@ -282,6 +290,43 @@ export const sendMaxBalance = () => (dispatch, getState) => {
   dispatch(sendUpdateAssetAmount(amount));
 };
 
+// SEEKSMARTER
+
+export const checkMetaCertWallet = () => (dispatch, getState) => {
+
+  const { recipient } = getState().send;
+
+  const checksumWallet = toChecksumAddress(recipient);
+
+  const postData = { wallet: checksumWallet };
+
+  fetch(METACERT_API_URL, {
+    method: 'POST',
+    body: JSON.stringify(postData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then(response => response.json()).then(data => 
+  {
+    console.log("seekdbg: MetacertAPiResult",data);
+
+    data = Object.assign(data, postData);
+
+    dispatch({ type: METACERT_API_RESPONSE, payload: data });
+
+  });
+
+  console.log("seekdbg: checkMetaCertWallet", checksumWallet);
+
+};
+
+export const clearMetaCertResponse = () => (dispatch, getState) => {
+
+  dispatch({ type: METACERT_API_RESPONSE, payload: {} });
+
+};
+
+
 export const sendClearFields = () => ({ type: SEND_CLEAR_FIELDS });
 
 // -- Reducer --------------------------------------------------------------- //
@@ -299,9 +344,13 @@ const INITIAL_STATE = {
   txHash: '',
   confirm: false,
   selected: { symbol: 'ETH' },
+  MetaCertWalletResult: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
+
+  console.log("seekdbg: reducerstate:", state);
+
   switch (action.type) {
     case SEND_GET_GAS_PRICES_REQUEST:
       return {
@@ -385,6 +434,8 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, selected: action.payload };
     case SEND_CLEAR_FIELDS:
       return { ...state, ...INITIAL_STATE };
+    case METACERT_API_RESPONSE:
+      return { ...state, MetaCertWalletResult: action.payload };
     default:
       return state;
   }
