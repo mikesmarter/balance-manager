@@ -54,7 +54,7 @@ const SEND_UPDATE_HAS_PENDING_TRANSACTION =
 
 const SEND_CLEAR_FIELDS = 'send/SEND_CLEAR_FIELDS';
 
-const METACERT_API_CLEAR = 'send/METACERT_API_CLEAR';
+const METACERT_API_CALL = 'send/METACERT_API_CALL';
 const METACERT_API_RESPONSE = 'send/METACERT_API_RESPONSE';
 
 //const METACERT_API_URL = 'http://middleware.seeksmarterdev.com/check';
@@ -313,16 +313,23 @@ export const checkMetaCertWallet = () => (dispatch, getState) => {
     data = Object.assign(data, postData);
 
     dispatch({ type: METACERT_API_RESPONSE, payload: data });
-
+    console.log("seekdbg: checkMetaCertWallet", checksumWallet);
   });
-
-  console.log("seekdbg: checkMetaCertWallet", checksumWallet);
 
 };
 
 export const clearMetaCertResponse = () => (dispatch, getState) => {
 
   dispatch({ type: METACERT_API_RESPONSE, payload: {} });
+
+};
+
+
+export const prepareMetaCertApiCall = () => (dispatch, getState) => {
+
+  let MetaCertCalls = getState().send.MetaCertCalls + 1;
+
+  dispatch({ type: METACERT_API_CALL, payload: MetaCertCalls });
 
 };
 
@@ -345,6 +352,7 @@ const INITIAL_STATE = {
   confirm: false,
   selected: { symbol: 'ETH' },
   MetaCertWalletResult: {},
+  MetaCertCalls: 0,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -435,7 +443,13 @@ export default (state = INITIAL_STATE, action) => {
     case SEND_CLEAR_FIELDS:
       return { ...state, ...INITIAL_STATE };
     case METACERT_API_RESPONSE:
-      return { ...state, MetaCertWalletResult: action.payload };
+      console.log("seekdbg: METACERT_API_RESPONSE");
+      return { ...state, 
+          MetaCertWalletResult: action.payload,
+          MetaCertCalls: 0,
+        };
+    case METACERT_API_CALL:
+      return { ...state, MetaCertCalls: action.payload };
     default:
       return state;
   }

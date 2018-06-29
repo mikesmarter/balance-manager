@@ -28,6 +28,7 @@ import {
   sendToggleConfirmationView,
   checkMetaCertWallet,
   clearMetaCertResponse,
+  prepareMetaCertApiCall,
 } from '../reducers/_send';
 import { notificationShow } from '../reducers/_notification';
 import { isValidAddress } from '../helpers/validators';
@@ -269,38 +270,75 @@ const StyledActions = styled.div`
   }
 `;
 
+
+const UnverifiedWallet = styled.div`
+  position: relative;
+  width:40px;
+  height:40px;
+  background-color: yellow;
+  top: -40px;
+`;
+
+
+const VerifiedWallet = styled.div`
+  position: relative;
+  width:50px;
+  height:50px;
+  background-color: green;
+  top: -40px;
+`;
+
+const PhishingWallet = styled.div`
+  position: relative;
+  width:50px;
+  height:50px;
+  background-color: red;
+  top: -40px;
+`;
+
 class SendModal extends Component {
   state = {
     isValidAddress: true,
     showQRCodeReader: false,
+    inCheck: false,
   };
 
   componentDidMount() {
     this.props.sendModalInit();
   }
+
+
   componentDidUpdate(prevProps) {
 
     if (isValidAddress(this.props.recipient))
     {
-
       if (this.props.MetaCertWalletResult.wallet !== undefined) {
-
-        console.log("seekdbg: props:", this.props.MetaCertWalletResult);
 
         const walletAddress = toChecksumAddress(this.props.recipient);
 
         // MIKE only calls API if wallet is different from previous result
         if (this.props.MetaCertWalletResult.wallet !== walletAddress)
         {
-          this.props.checkMetaCertWallet();
-          console.log("seekdbg: next call checkMetaCertWallet()", walletAddress);
+          // prevent multiple calls
+          if (this.props.MetaCertCalls <= 0)
+          {
+            this.props.prepareMetaCertApiCall();
+            console.log("seekdbg: next call checkMetaCertWallet()", walletAddress);
+            this.props.checkMetaCertWallet();
+          }
         }
       }
       else
       {
-        // NO previous API Call
-        this.props.checkMetaCertWallet();
-        console.log("seekdbg: first call checkMetaCertWallet()", this.props.recipient);
+        const walletAddress = toChecksumAddress(this.props.recipient);
+
+        // NO previous API Call, and prevent multiple calls
+        if (this.props.MetaCertCalls <= 0)
+        {
+          this.props.prepareMetaCertApiCall();
+          console.log("seekdbg: first call checkMetaCertWallet()", walletAddress);
+          this.props.checkMetaCertWallet();
+        }
       }
     }
     else
@@ -436,22 +474,9 @@ class SendModal extends Component {
   };
 
 
-  _xpto = () => {
+  _isempty = () => {
 
-    console.log("seekdbg: _xpto called");
-
-    let r = false;
-
-    if (Object.keys(this.props.MetaCertWalletResult).length === 0)
-    {
-      console.log("seekdbg: EMPTY");
-      r = true;
-    } 
-    else
-    {
-      console.log("seekdbg: NOT EMPTY");
-      r = false;
-    }
+    let r = (Object.keys(this.props.MetaCertWalletResult).length === 0);
     return r;
   }
 
@@ -485,9 +510,8 @@ class SendModal extends Component {
                   monospace
                   label={lang.t('input.recipient_address')}
                   spellCheck="false"
-                  placeholder="0x.xxxxxx.."
+                  placeholder="0x"
                   type="text"
-                  xpto="testing"
                   value={this.props.recipient}
                   onFocus={this.onAddressInputFocus}
                   onBlur={this.onAddressInputBlur}
@@ -495,6 +519,21 @@ class SendModal extends Component {
                     this.props.sendUpdateRecipient(target.value)
                   }
                 />
+
+                {this._isempty() ? (
+                  ''
+                ) 
+                : 
+                (this.props.MetaCertWalletResult.labelType === null ? 
+                  (<UnverifiedWallet/>) 
+                  : 
+                  (this.props.MetaCertWalletResult.labelType === 'verified-wallet' ?
+                  (<VerifiedWallet/>)
+                  : 
+                  (<PhishingWallet/>) 
+                  )
+                )}
+
                 {this.props.recipient &&
                   !this.state.isValidAddress && (
                     <StyledInvalidAddress>
@@ -505,17 +544,6 @@ class SendModal extends Component {
                   <img src={qrIcon} alt="recipient" />
                 </StyledQRIcon>
               </StyledFlex>
-
-              {this._xpto() ? (
-                ''
-              ) : 
-              (
-                this.props.MetaCertWalletResult.labelType === null ? 
-                (<p>NULL</p>) 
-                : 
-                (<p>{this.props.MetaCertWalletResult.labelType}</p>) 
-              )}
-              
 
               <StyledFlex>
                 <StyledFlex>
@@ -785,9 +813,11 @@ SendModal.propTypes = {
   network: PropTypes.string.isRequired,
   nativeCurrency: PropTypes.string.isRequired,
   prices: PropTypes.object.isRequired,
+  prepareMetaCertApiCall: PropTypes.func.isRequired,
   checkMetaCertWallet: PropTypes.func.isRequired,
   clearMetaCertResponse: PropTypes.func.isRequired,
   MetaCertWalletResult: PropTypes.object.isRequired,
+  MetaCertCalls: PropTypes.number.isRequired
 };
 
 const reduxProps = ({ modal, send, account }) => ({
@@ -809,7 +839,8 @@ const reduxProps = ({ modal, send, account }) => ({
   network: account.network,
   nativeCurrency: account.nativeCurrency,
   prices: account.prices,
-  MetaCertWalletResult: send.MetaCertWalletResult,  
+  MetaCertWalletResult: send.MetaCertWalletResult,
+  MetaCertCalls: send.MetaCertCalls,  
 });
 
 export default connect(reduxProps, {
@@ -825,6 +856,7 @@ export default connect(reduxProps, {
   sendMaxBalance,
   sendToggleConfirmationView,
   notificationShow,
+  prepareMetaCertApiCall,
   checkMetaCertWallet,
   clearMetaCertResponse,
 })(SendModal);
