@@ -43,6 +43,11 @@ import { fonts, colors } from '../styles';
 
 import { toChecksumAddress } from 'ethereumjs-util';
 
+import metacertAwaitingIcon from '../assets/metacert-awaiting.svg';
+import metacertPhishingIcon from '../assets/metacert-phishing.svg';
+import metacertUnverifiedIcon from '../assets/metacert-unverified.svg';
+import metacertVerifiedIcon from '../assets/metacert-verified.svg';
+
 const StyledSuccessMessage = styled.div`
   width: 100%;
   padding: 22px;
@@ -270,30 +275,23 @@ const StyledActions = styled.div`
   }
 `;
 
-
-const UnverifiedWallet = styled.div`
-  position: relative;
-  width:40px;
-  height:40px;
-  background-color: yellow;
-  top: -40px;
+const MetaCertShield = styled.div`
+  position: absolute;
+  height:43px;
+  right:63px;
+  bottom: 0;
+  display: flex;
+  margin: 0;
 `;
 
-
-const VerifiedWallet = styled.div`
-  position: relative;
-  width:50px;
-  height:50px;
-  background-color: green;
-  top: -40px;
-`;
-
-const PhishingWallet = styled.div`
-  position: relative;
-  width:50px;
-  height:50px;
-  background-color: red;
-  top: -40px;
+const MetaCertShieldUnv = styled.div`
+  position: absolute;
+  height:43px;
+  right:63px;
+  bottom: 0;
+  display: flex;
+  margin: 0;
+  background-color: lightgrey;
 `;
 
 class SendModal extends Component {
@@ -520,20 +518,6 @@ class SendModal extends Component {
                   }
                 />
 
-                {this._isempty() ? (
-                  ''
-                ) 
-                : 
-                (this.props.MetaCertWalletResult.labelType === null ? 
-                  (<UnverifiedWallet/>) 
-                  : 
-                  (this.props.MetaCertWalletResult.labelType === 'verified-wallet' ?
-                  (<VerifiedWallet/>)
-                  : 
-                  (<PhishingWallet/>) 
-                  )
-                )}
-
                 {this.props.recipient &&
                   !this.state.isValidAddress && (
                     <StyledInvalidAddress>
@@ -543,6 +527,33 @@ class SendModal extends Component {
                 <StyledQRIcon onClick={this.toggleQRCodeReader}>
                   <img src={qrIcon} alt="recipient" />
                 </StyledQRIcon>
+
+                {this._isempty() ? (
+                  ''
+                ) 
+                : 
+                (this.props.MetaCertWalletResult.labelType === null ? 
+                  (<MetaCertShieldUnv>
+                    <img src={metacertUnverifiedIcon} alt="verified" />
+                  </MetaCertShieldUnv>) 
+                  : 
+                  (this.props.MetaCertWalletResult.labelType === 'verified-wallet' ?
+                  (<MetaCertShield>
+                    <img src={metacertVerifiedIcon} alt="verified" />
+                  </MetaCertShield>)
+                  :
+                  (this.props.MetaCertWalletResult.labelType === 'phising-wallet' ?
+                  (<MetaCertShield>
+                    <img src={metacertPhishingIcon} alt="verified" />
+                  </MetaCertShield>)
+                  :
+                  (<MetaCertShield>
+                    <img src={metacertAwaitingIcon} alt="verified" />
+                  </MetaCertShield>)
+                  )
+                  )
+                )}
+
               </StyledFlex>
 
               <StyledFlex>
