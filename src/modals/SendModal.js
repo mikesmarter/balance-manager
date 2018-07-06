@@ -282,6 +282,8 @@ const MetaCertShield = styled.div`
   bottom: 0;
   display: flex;
   margin: 0;
+  padding: 2px;
+  & img { padding: 2px; }
 `;
 
 const MetaCertShieldUnv = styled.div`
@@ -291,6 +293,8 @@ const MetaCertShieldUnv = styled.div`
   bottom: 0;
   display: flex;
   margin: 0;
+  padding: 2px;
+  & img { padding: 2px; }
   background-color: lightgrey;
 `;
 
@@ -542,7 +546,7 @@ class SendModal extends Component {
                     <img src={metacertVerifiedIcon} alt="verified" />
                   </MetaCertShield>)
                   :
-                  (this.props.MetaCertWalletResult.labelType === 'phising-wallet' ?
+                  (this.props.MetaCertWalletResult.labelType === 'phishing-wallet' ?
                   (<MetaCertShield>
                     <img src={metacertPhishingIcon} alt="verified" />
                   </MetaCertShield>)
