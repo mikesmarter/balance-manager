@@ -57,8 +57,8 @@ const SEND_CLEAR_FIELDS = 'send/SEND_CLEAR_FIELDS';
 const METACERT_API_CALL = 'send/METACERT_API_CALL';
 const METACERT_API_RESPONSE = 'send/METACERT_API_RESPONSE';
 
-//const METACERT_API_URL = 'http://middleware.seeksmarterdev.com/check';
-const METACERT_API_URL = 'http://localhost:5000/fakecheck';
+const METACERT_API_URL = 'http://middleware.seeksmarterdev.com/check';
+//const METACERT_API_URL = 'http://localhost:5000/fakecheck';
 
 // -- Actions --------------------------------------------------------------- //
 
