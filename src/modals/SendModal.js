@@ -275,6 +275,24 @@ const StyledActions = styled.div`
   }
 `;
 
+const ToolTipText = styled.span`
+  visibility: hidden;
+  opacity: 0;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  
+  position:absolute;
+  z-index:1;
+
+  top: -5px;
+  right: 105%;  
+`;
+
+
 const MetaCertShield = styled.div`
   position: absolute;
   height:43px;
@@ -284,6 +302,10 @@ const MetaCertShield = styled.div`
   margin: 0;
   padding: 2px;
   & img { padding: 2px; }
+  &:hover span {
+    visibility: visible;
+    opacity: 1;
+  }
 `;
 
 const MetaCertShieldUnv = styled.div`
@@ -296,6 +318,17 @@ const MetaCertShieldUnv = styled.div`
   padding: 2px;
   & img { padding: 2px; }
   background-color: lightgrey;
+  
+  &:hover span {
+    visibility: visible;
+    opacity: 1;
+    -webkit-transition: opacity 1s ease-in-out;
+      -moz-transition: opacity 1s ease-in-out;
+      -ms-transition: opacity 1s ease-in-out;
+      -o-transition: opacity 1s ease-in-out;
+      transition: opacity 1s ease-in-out;
+  }
+
 `;
 
 class SendModal extends Component {
@@ -537,22 +570,28 @@ class SendModal extends Component {
                 ) 
                 : 
                 (this.props.MetaCertWalletResult.labelType === null ? 
-                  (<MetaCertShieldUnv>
-                    <img src={metacertUnverifiedIcon} alt="verified" />
-                  </MetaCertShieldUnv>) 
+                  (
+                      <MetaCertShieldUnv>
+                        <img src={metacertUnverifiedIcon} alt="{lang.t('metacert.METACERT_NOT_VERIFIED')}" />
+                        <ToolTipText>{lang.t('metacert.METACERT_NOT_VERIFIED_VERBOSE')}</ToolTipText>
+                      </MetaCertShieldUnv>
+                  ) 
                   : 
                   (this.props.MetaCertWalletResult.labelType === 'verified-wallet' ?
                   (<MetaCertShield>
-                    <img src={metacertVerifiedIcon} alt="verified" />
+                    <img src={metacertVerifiedIcon} alt="{lang.t('metacert.METACERT_VERIFIED')}" />
+                    <ToolTipText>{lang.t('metacert.METACERT_VERIFIED_VERBOSE')}</ToolTipText>
                   </MetaCertShield>)
                   :
                   (this.props.MetaCertWalletResult.labelType === 'phishing-wallet' ?
                   (<MetaCertShield>
-                    <img src={metacertPhishingIcon} alt="verified" />
+                    <img src={metacertPhishingIcon} alt="{lang.t('metacert.METACERT_PHISHING')}" />
+                    <ToolTipText>{lang.t('metacert.METACERT_PHISHING_VERBOSE')}</ToolTipText>
                   </MetaCertShield>)
                   :
                   (<MetaCertShield>
-                    <img src={metacertAwaitingIcon} alt="verified" />
+                    <img src={metacertAwaitingIcon} alt="{lang.t('metacert.METACERT_PENDING_INVESTIGATION')}" />
+                    <ToolTipText>{lang.t('metacert.METACERT_PENDING_INVESTIGATION_VERBOSE')}</ToolTipText>
                   </MetaCertShield>)
                   )
                   )

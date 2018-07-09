@@ -191,6 +191,18 @@
       "day": "day",
       "days": "days",
       "now": "Now"
+    },
+    "metacert" : {
+      "METACERT_INVALID": "Invalid address",
+      "METACERT_INVALID_VERBOSE": "This is an invalid address.",
+      "METACERT_NOT_VERIFIED": "Address not verified",
+      "METACERT_NOT_VERIFIED_VERBOSE": "This address has NOT been verified by MetaCert Protocol.",
+      "METACERT_VERIFIED": "Address verified",
+      "METACERT_VERIFIED_VERBOSE": "This address is verified by MetaCert Protocol.",
+      "METACERT_PHISHING": "Phishing address",
+      "METACERT_PHISHING_VERBOSE": "Warning! This address has been classified as phishing!",
+      "METACERT_PENDING_INVESTIGATION": "Address under investigation",
+      "METACERT_PENDING_INVESTIGATION_VERBOSE": "Warning! This address is under investigation."
     }
   }
 }
