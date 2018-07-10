@@ -278,7 +278,7 @@ const StyledActions = styled.div`
 const ToolTipText = styled.span`
   visibility: hidden;
   opacity: 0;
-  width: 120px;
+  width: 220px;
   background-color: black;
   color: #fff;
   text-align: center;
@@ -305,6 +305,11 @@ const MetaCertShield = styled.div`
   &:hover span {
     visibility: visible;
     opacity: 1;
+    -webkit-transition: opacity 1s ease-in-out;
+    -moz-transition: opacity 1s ease-in-out;
+    -ms-transition: opacity 1s ease-in-out;
+    -o-transition: opacity 1s ease-in-out;
+    transition: opacity 1s ease-in-out;
   }
 `;
 
@@ -323,10 +328,10 @@ const MetaCertShieldUnv = styled.div`
     visibility: visible;
     opacity: 1;
     -webkit-transition: opacity 1s ease-in-out;
-      -moz-transition: opacity 1s ease-in-out;
-      -ms-transition: opacity 1s ease-in-out;
-      -o-transition: opacity 1s ease-in-out;
-      transition: opacity 1s ease-in-out;
+    -moz-transition: opacity 1s ease-in-out;
+    -ms-transition: opacity 1s ease-in-out;
+    -o-transition: opacity 1s ease-in-out;
+    transition: opacity 1s ease-in-out;
   }
 
 `;
